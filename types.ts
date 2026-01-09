@@ -100,7 +100,6 @@ export const DICTIONARY = {
     sync60min: 'Every Hour',
     syncDaily: 'Every 24 Hours',
     syncManual: 'Manual Only',
-    // Expanded
     manageConn: 'Manage connection, sync rules and mapping.',
     ftpHost: 'FTP Host',
     username: 'Username',
@@ -135,7 +134,24 @@ export const DICTIONARY = {
     optTitle: 'Optimized Title',
     propCat: 'Proposed Category',
     descPreview: 'Description Preview',
-    update: 'Update'
+    update: 'Update',
+    // New Translations
+    securityTitle: 'Security & Trust',
+    securityDesc: 'This platform is protected by enterprise-grade security protocols.',
+    secSsl: '256-bit SSL Encrypted',
+    secIso: 'ISO 27001 Certified',
+    secGdpr: 'GDPR Compliant',
+    boxShop: 'Shop Information',
+    boxSupport: 'Support Service',
+    boxAi: 'AI Support Agent',
+    revenue: 'Total Revenue',
+    loggedIn: 'Logged in as',
+    startChat: 'Start Chat with Tradeus',
+    chatTitle: 'Tradeus AI Support',
+    chatPlaceholder: 'How can I help you today?',
+    address: 'Address',
+    phone: 'Phone',
+    emailContact: 'Email'
   },
   de: {
     dashboard: 'Übersicht',
@@ -180,7 +196,6 @@ export const DICTIONARY = {
     sync60min: 'Jede Stunde',
     syncDaily: 'Alle 24 Stunden',
     syncManual: 'Nur Manuell',
-    // Expanded
     manageConn: 'Verwalten Sie Verbindungen, Sync-Regeln und Zuordnungen.',
     ftpHost: 'FTP Host',
     username: 'Benutzername',
@@ -215,7 +230,24 @@ export const DICTIONARY = {
     optTitle: 'Optimierter Titel',
     propCat: 'Vorgeschlagene Kategorie',
     descPreview: 'Beschreibung Vorschau',
-    update: 'Aktualisieren'
+    update: 'Aktualisieren',
+    // New Translations
+    securityTitle: 'Sicherheit & Vertrauen',
+    securityDesc: 'Diese Plattform ist durch Sicherheitsprotokolle der Enterprise-Klasse geschützt.',
+    secSsl: '256-Bit SSL Verschlüsselt',
+    secIso: 'ISO 27001 Zertifiziert',
+    secGdpr: 'DSGVO Konform',
+    boxShop: 'Shop Informationen',
+    boxSupport: 'Kundenservice',
+    boxAi: 'KI Support Agent',
+    revenue: 'Gesamtumsatz',
+    loggedIn: 'Angemeldet als',
+    startChat: 'Chat mit Tradeus starten',
+    chatTitle: 'Tradeus KI Support',
+    chatPlaceholder: 'Wie kann ich Ihnen helfen?',
+    address: 'Adresse',
+    phone: 'Telefon',
+    emailContact: 'E-Mail'
   },
   ch: {
     dashboard: 'Übersicht',
@@ -260,7 +292,6 @@ export const DICTIONARY = {
     sync60min: 'Jedi Stund',
     syncDaily: 'Alli 24 Stund',
     syncManual: 'Nur Manuell',
-    // Expanded
     manageConn: 'Verbindige, Sync-Regle und Zueornige verwalte.',
     ftpHost: 'FTP Host',
     username: 'Benutzernama',
@@ -295,6 +326,23 @@ export const DICTIONARY = {
     optTitle: 'Optimierte Titel',
     propCat: 'Vorschlag Kategori',
     descPreview: 'Beschriibig Vorschau',
-    update: 'Aktualisiere'
+    update: 'Aktualisiere',
+    // New Translations
+    securityTitle: 'Sicherheit & Vertraue',
+    securityDesc: 'Die Plattform isch mit Enterprise-Security Standards gschützt.',
+    secSsl: '256-Bit SSL Verschlüsslet',
+    secIso: 'ISO 27001 Zertifiziert',
+    secGdpr: 'DSGVO Konform',
+    boxShop: 'Shop Infos',
+    boxSupport: 'Kundedienscht',
+    boxAi: 'KI Support Agent',
+    revenue: 'Gsamtuusatz',
+    loggedIn: 'Aagmäldet als',
+    startChat: 'Chat mit Tradeus starte',
+    chatTitle: 'Tradeus KI Support',
+    chatPlaceholder: 'Wie chani dir hälfe?',
+    address: 'Adrässe',
+    phone: 'Telefon',
+    emailContact: 'E-Mail'
   }
 };

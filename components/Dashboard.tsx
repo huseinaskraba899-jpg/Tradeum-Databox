@@ -1,18 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Product, Language, DICTIONARY } from '../types';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
-import { ArrowUpRight, ArrowDownRight, Activity, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, Activity, AlertTriangle, CheckCircle, Clock, ShoppingBag, Phone, Mail, MapPin, Bot, MessageSquare, Send, User } from 'lucide-react';
 
 interface DashboardProps {
   products: Product[];
   lang: Language;
+  showNotification: (type: 'success' | 'error' | 'info', message: string) => void;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ products, lang }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ products, lang, showNotification }) => {
   const t = DICTIONARY[lang];
-  const totalProducts = 12450;
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatMessage, setChatMessage] = useState('');
+  
+  const totalProducts = products.length; // Use real length now
   const pending = products.filter(p => p.status === 'draft').length;
   const lowMargin = products.filter(p => !p.marginSafe).length;
 
@@ -26,12 +30,101 @@ export const Dashboard: React.FC<DashboardProps> = ({ products, lang }) => {
     { name: 'Sun', imported: 349, errors: 43 },
   ];
 
+  const handleSendMessage = (e: React.FormEvent) => {
+      e.preventDefault();
+      if(!chatMessage.trim()) return;
+      
+      // Simulation
+      setChatMessage('');
+      showNotification('info', 'Tradeus AI is processing your request...');
+      setTimeout(() => {
+          showNotification('success', 'Request sent to support team.');
+          setIsChatOpen(false);
+      }, 1500);
+  };
+
   return (
-    <div className="space-y-6 animate-fade-in pb-8">
+    <div className="space-y-6 animate-fade-in pb-8 relative">
+      
+      {/* 3 Main Boxes Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          
+          {/* Box 1: Shop Info */}
+          <div className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-800 flex flex-col justify-between">
+              <div className="flex items-center gap-3 mb-4">
+                  <div className="p-3 bg-tradeum-100 dark:bg-tradeum-900/30 rounded-lg text-tradeum-600 dark:text-tradeum-400">
+                      <ShoppingBag size={24} />
+                  </div>
+                  <div>
+                      <h3 className="font-bold text-gray-900 dark:text-white text-lg">{t.boxShop}</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Tradeum Demo Store GmbH</p>
+                  </div>
+              </div>
+              <div className="space-y-3">
+                  <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">{t.revenue}</span>
+                      <span className="font-mono font-bold text-gray-900 dark:text-white">€1,245,300</span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">{t.loggedIn}</span>
+                      <div className="flex items-center gap-2">
+                          <User size={14} className="text-gray-400" />
+                          <span className="font-medium text-gray-900 dark:text-white">Admin User</span>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          {/* Box 2: Support Service */}
+          <div className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-800 flex flex-col justify-between">
+              <div className="flex items-center gap-3 mb-4">
+                  <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
+                      <Phone size={24} />
+                  </div>
+                  <div>
+                      <h3 className="font-bold text-gray-900 dark:text-white text-lg">{t.boxSupport}</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Available Mon-Fri, 9-18h</p>
+                  </div>
+              </div>
+              <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors cursor-pointer">
+                      <Phone size={16} /> <span>+41 44 123 45 67</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors cursor-pointer">
+                      <Mail size={16} /> <span>support@tradeum.io</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
+                      <MapPin size={16} /> <span>Bahnhofstrasse 100, Zürich</span>
+                  </div>
+              </div>
+          </div>
+
+          {/* Box 3: AI Support */}
+          <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-xl p-6 shadow-lg text-white flex flex-col justify-between relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-10">
+                  <Bot size={100} />
+              </div>
+              <div className="flex items-center gap-3 mb-4 relative z-10">
+                  <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
+                      <Bot size={24} className="text-white" />
+                  </div>
+                  <div>
+                      <h3 className="font-bold text-white text-lg">{t.boxAi}</h3>
+                      <p className="text-sm text-indigo-100">Instant Help & Config Assistant</p>
+                  </div>
+              </div>
+              <button 
+                onClick={() => setIsChatOpen(true)}
+                className="w-full py-3 bg-white text-indigo-700 font-bold rounded-lg hover:bg-indigo-50 transition-colors flex items-center justify-center gap-2 relative z-10"
+              >
+                  <MessageSquare size={18} /> {t.startChat}
+              </button>
+          </div>
+      </div>
+
       <div className="flex justify-between items-end">
         <div>
-           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.dashboard}</h1>
-           <p className="text-gray-500 dark:text-gray-400 mt-1">{t.welcome}</p>
+           <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t.dashboard} Overview</h2>
         </div>
         <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-300 bg-white dark:bg-gray-800 px-3 py-1.5 rounded-md border dark:border-gray-700 shadow-sm">
            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
@@ -108,7 +201,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ products, lang }) => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm lg:col-span-2 flex flex-col min-w-0">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">{t.importVol}</h3>
-          {/* Explicit height and width handling to prevent re-charts calculation errors */}
           <div style={{ width: '100%', height: 300 }}>
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData}>
@@ -164,6 +256,51 @@ export const Dashboard: React.FC<DashboardProps> = ({ products, lang }) => {
           </div>
         </div>
       </div>
+
+      {/* AI Chat Modal */}
+      {isChatOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+              <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsChatOpen(false)}></div>
+              <div className="bg-white dark:bg-gray-900 w-full max-w-lg rounded-2xl shadow-2xl relative z-10 overflow-hidden flex flex-col h-[500px] border border-gray-200 dark:border-gray-700 animate-slide-in">
+                  <div className="bg-gradient-to-r from-indigo-600 to-purple-700 p-4 flex justify-between items-center">
+                      <div className="flex items-center gap-3 text-white">
+                          <Bot />
+                          <span className="font-bold">{t.chatTitle}</span>
+                      </div>
+                      <button onClick={() => setIsChatOpen(false)} className="text-white/80 hover:text-white">
+                          <ArrowDownRight className="rotate-180" />
+                      </button>
+                  </div>
+                  
+                  <div className="flex-1 bg-gray-50 dark:bg-gray-950 p-4 overflow-y-auto space-y-4">
+                      <div className="flex gap-3">
+                          <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 flex-shrink-0">
+                              <Bot size={18} />
+                          </div>
+                          <div className="bg-white dark:bg-gray-800 p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 dark:border-gray-700 text-sm dark:text-gray-200">
+                              Hello! I am Tradeus. How can I assist you with your data import today?
+                          </div>
+                      </div>
+                  </div>
+
+                  <form onSubmit={handleSendMessage} className="p-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+                      <div className="flex gap-2">
+                          <input 
+                            type="text" 
+                            value={chatMessage}
+                            onChange={(e) => setChatMessage(e.target.value)}
+                            placeholder={t.chatPlaceholder}
+                            className="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
+                          />
+                          <button type="submit" className="p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-colors">
+                              <Send size={18} />
+                          </button>
+                      </div>
+                  </form>
+              </div>
+          </div>
+      )}
+
     </div>
   );
 };

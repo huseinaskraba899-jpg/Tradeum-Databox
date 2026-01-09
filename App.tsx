@@ -4,11 +4,12 @@ import { Dashboard } from './components/Dashboard';
 import { ApprovalQueue } from './components/ApprovalQueue';
 import { Configuration } from './components/Configuration';
 import { Login } from './components/Login';
+import { NotificationOverlay, NotificationType } from './components/NotificationOverlay';
 import { ViewState, Product, AppConfig, Language, Theme, DICTIONARY } from './types';
 import { RefreshCw, Clock } from 'lucide-react';
 
 // Mock Initial Data
-const INITIAL_PRODUCTS: Product[] = [
+const BASE_PRODUCTS: Product[] = [
   {
     id: '1',
     sku: 'WH-8842-BL',
@@ -55,6 +56,38 @@ const INITIAL_PRODUCTS: Product[] = [
   }
 ];
 
+// Helper to generate 50 more mock products
+const generateMockProducts = (): Product[] => {
+  const categories = ['Home', 'Electronics', 'Garden', 'Fashion', 'Toys'];
+  const generated: Product[] = [];
+  
+  for (let i = 4; i <= 53; i++) {
+    const buy = Math.floor(Math.random() * 100) + 10;
+    const sell = buy * (1 + (Math.random() * 0.8 + 0.1)); // 10% to 90% margin
+    const margin = Math.round(((sell - buy) / sell) * 100);
+    const cat = categories[Math.floor(Math.random() * categories.length)];
+    const isSafe = margin >= 25;
+
+    generated.push({
+      id: i.toString(),
+      sku: `MOCK-${cat.toUpperCase().substring(0,3)}-${1000 + i}`,
+      rawTitle: `${cat} Generic Product Model ${i} Imported`,
+      rawDescription: `This is a raw imported description for item ${i}. Needs optimization.`,
+      buyPrice: buy,
+      sellPrice: parseFloat(sell.toFixed(2)),
+      stock: Math.floor(Math.random() * 200),
+      isOnline: Math.random() > 0.8,
+      aiStatus: 'pending',
+      status: 'draft',
+      margin: margin,
+      marginSafe: isSafe
+    });
+  }
+  return generated;
+};
+
+const INITIAL_PRODUCTS = [...BASE_PRODUCTS, ...generateMockProducts()];
+
 const INITIAL_CONFIG: AppConfig = {
   ftpHost: 'ftp.suppliers.com',
   ftpUser: 'wholesale_connect',
@@ -78,6 +111,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState<ViewState>('dashboard');
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
   const [config, setConfig] = useState<AppConfig>(INITIAL_CONFIG);
+  const [notification, setNotification] = useState<NotificationType | null>(null);
   
   // System Theme Detection
   const [theme, setTheme] = useState<Theme>(() => {
@@ -110,17 +144,22 @@ export default function App() {
     }));
   }, [config.minMarginPercent]);
 
+  const showNotification = (type: 'success' | 'error' | 'info', message: string) => {
+      setNotification({ type, message });
+  };
+
   const handleUpdateProduct = (updated: Product) => {
     setProducts(prev => prev.map(p => p.id === updated.id ? updated : p));
   };
 
   const handleApprove = (id: string) => {
     setProducts(prev => prev.map(p => p.id === id ? { ...p, status: 'approved', isOnline: true } : p));
-    alert(DICTIONARY[lang].approve + " OK");
+    showNotification('success', DICTIONARY[lang].approve + " Successful");
   };
 
   const handleReject = (id: string) => {
     setProducts(prev => prev.filter(p => p.id !== id));
+    showNotification('info', "Product removed from queue");
   };
 
   const pendingCount = products.filter(p => !p.isOnline).length;
@@ -140,6 +179,12 @@ export default function App() {
 
   return (
     <div className={`${theme}`}>
+        {/* Central Notification Overlay */}
+        <NotificationOverlay 
+            notification={notification} 
+            onClose={() => setNotification(null)} 
+        />
+
         <div className="flex min-h-screen bg-[#F6F6F7] dark:bg-gray-950 transition-colors duration-300">
         <Sidebar 
             currentView={currentView} 
@@ -155,7 +200,13 @@ export default function App() {
         <main className="flex-1 p-4 lg:p-8 overflow-y-auto max-h-screen w-full flex flex-col">
             
             <div className="max-w-7xl mx-auto w-full flex-1">
-            {currentView === 'dashboard' && <Dashboard products={products} lang={lang} />}
+            {currentView === 'dashboard' && (
+                <Dashboard 
+                    products={products} 
+                    lang={lang} 
+                    showNotification={showNotification}
+                />
+            )}
             
             {currentView === 'approval' && (
                 <ApprovalQueue 
@@ -173,7 +224,7 @@ export default function App() {
                     config={config}
                     onSave={(newConfig) => {
                         setConfig(newConfig);
-                        alert("Configuration saved successfully.");
+                        showNotification('success', "Configuration saved successfully.");
                     }}
                     lang={lang}
                 />

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ViewState, Language, Theme, DICTIONARY } from '../types';
-import { LayoutDashboard, CheckSquare, Settings, FileText, Moon, Sun, Menu, X, LogOut, TrendingUp } from 'lucide-react';
+import { LayoutDashboard, CheckSquare, Settings, FileText, Moon, Sun, Menu, X, LogOut, TrendingUp, ShieldCheck, Lock, Database } from 'lucide-react';
 
 interface SidebarProps {
   currentView: ViewState;
@@ -28,14 +28,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
-  // Logo Placeholder - Replace src with your local file path if needed
-  // Using a generated placeholder that mimics the green graph logo described
   const Logo = () => (
       <div className="flex items-center gap-2">
-         {/* If you have the image file, uncomment the img tag and remove the div below */}
-         {/* <img src="/logo.png" alt="Tradeum" className="h-10 w-auto" /> */}
-         
-         {/* CSS Fallback matching the logo style provided */}
          <div className="flex items-center gap-2">
             <div className="w-10 h-10 bg-white dark:bg-gray-800 rounded-lg flex items-center justify-center border border-tradeum-200 dark:border-tradeum-800 shadow-sm">
                  <TrendingUp className="text-tradeum-500 w-6 h-6" />
@@ -54,7 +48,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <Logo />
       </div>
 
-      <nav className="flex-1 p-4 space-y-2 overflow-y-auto bg-white dark:bg-gray-900">
+      <nav className="flex-1 p-4 space-y-2 overflow-y-auto bg-white dark:bg-gray-900 scrollbar-hide">
         {menuItems.map((item) => {
           const isActive = currentView === item.id;
           const Icon = item.icon;
@@ -84,6 +78,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           );
         })}
+
+        {/* Security & Trust Section */}
+        <div className="mt-8 px-4 py-2">
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-1">
+                <ShieldCheck size={12} /> {t.securityTitle}
+            </h3>
+            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 border border-gray-100 dark:border-gray-800 space-y-2">
+                <div className="flex items-center gap-2 text-xs text-green-700 dark:text-green-400">
+                    <Lock size={12} /> {t.secSsl}
+                </div>
+                <div className="flex items-center gap-2 text-xs text-blue-700 dark:text-blue-400">
+                    <ShieldCheck size={12} /> {t.secIso}
+                </div>
+                <div className="flex items-center gap-2 text-xs text-purple-700 dark:text-purple-400">
+                    <Database size={12} /> {t.secGdpr}
+                </div>
+                <p className="text-[10px] text-gray-400 mt-2 leading-tight">
+                    {t.securityDesc}
+                </p>
+            </div>
+        </div>
       </nav>
 
       <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-4 bg-white dark:bg-gray-900">
