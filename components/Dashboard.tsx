@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Product, Language, DICTIONARY } from '../types';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
-import { ArrowUpRight, ArrowDownRight, Activity, AlertTriangle, CheckCircle, Clock, ShoppingBag, Phone, Mail, MapPin, Bot, MessageSquare, Send, User } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, Activity, AlertTriangle, CheckCircle, Clock, ShoppingBag, Phone, Mail, MapPin, Bot, MessageSquare, Send, User, X } from 'lucide-react';
 
 interface DashboardProps {
   products: Product[];
@@ -11,12 +11,35 @@ interface DashboardProps {
   showNotification: (type: 'success' | 'error' | 'info', message: string) => void;
 }
 
+interface ChatMessage {
+    id: string;
+    role: 'user' | 'assistant';
+    text: string;
+}
+
 export const Dashboard: React.FC<DashboardProps> = ({ products, lang, showNotification }) => {
   const t = DICTIONARY[lang];
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  const totalProducts = products.length; // Use real length now
+  // Initialize chat when opened
+  useEffect(() => {
+      if (isChatOpen && messages.length === 0) {
+          setMessages([
+              { id: '1', role: 'assistant', text: 'Hello! I am Tradeus. How can I assist you with your data import today?' }
+          ]);
+      }
+  }, [isChatOpen]);
+
+  // Scroll to bottom
+  useEffect(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isTyping]);
+
+  const totalProducts = products.length;
   const pending = products.filter(p => p.status === 'draft').length;
   const lowMargin = products.filter(p => !p.marginSafe).length;
 
@@ -34,12 +57,19 @@ export const Dashboard: React.FC<DashboardProps> = ({ products, lang, showNotifi
       e.preventDefault();
       if(!chatMessage.trim()) return;
       
-      // Simulation
+      const userMsg: ChatMessage = { id: Date.now().toString(), role: 'user', text: chatMessage };
+      setMessages(prev => [...prev, userMsg]);
       setChatMessage('');
-      showNotification('info', 'Tradeus AI is processing your request...');
+      setIsTyping(true);
+      
+      // Simulate AI response
       setTimeout(() => {
-          showNotification('success', 'Request sent to support team.');
-          setIsChatOpen(false);
+          setIsTyping(false);
+          setMessages(prev => [...prev, {
+              id: (Date.now() + 1).toString(),
+              role: 'assistant',
+              text: "I understand. I'm analyzing your store's data pattern. Please allow me a moment to optimize the import settings for better results."
+          }]);
       }, 1500);
   };
 
@@ -267,33 +297,58 @@ export const Dashboard: React.FC<DashboardProps> = ({ products, lang, showNotifi
                           <Bot />
                           <span className="font-bold">{t.chatTitle}</span>
                       </div>
-                      <button onClick={() => setIsChatOpen(false)} className="text-white/80 hover:text-white">
-                          <ArrowDownRight className="rotate-180" />
+                      <button onClick={() => setIsChatOpen(false)} className="text-white/80 hover:text-white p-1 rounded-full hover:bg-white/10 transition-colors">
+                          <X size={20} />
                       </button>
                   </div>
                   
                   <div className="flex-1 bg-gray-50 dark:bg-gray-950 p-4 overflow-y-auto space-y-4">
-                      <div className="flex gap-3">
-                          <div className="w-8 h-8 rounded-full bg-tradeum-100 dark:bg-tradeum-900/30 flex items-center justify-center text-tradeum-600 dark:text-tradeum-400 flex-shrink-0">
-                              <Bot size={18} />
+                      {messages.map(msg => (
+                          <div key={msg.id} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}>
+                              {msg.role === 'assistant' && (
+                                  <div className="w-8 h-8 rounded-full bg-tradeum-100 dark:bg-tradeum-900/30 flex items-center justify-center text-tradeum-600 dark:text-tradeum-400 flex-shrink-0">
+                                      <Bot size={18} />
+                                  </div>
+                              )}
+                              <div className={`p-3 rounded-2xl shadow-sm border text-sm max-w-[80%] ${
+                                  msg.role === 'user' 
+                                  ? 'bg-tradeum-500 text-white rounded-tr-none border-tradeum-600' 
+                                  : 'bg-white dark:bg-gray-800 rounded-tl-none border-gray-100 dark:border-gray-700 dark:text-gray-200'
+                              }`}>
+                                  {msg.text}
+                              </div>
                           </div>
-                          <div className="bg-white dark:bg-gray-800 p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 dark:border-gray-700 text-sm dark:text-gray-200">
-                              Hello! I am Tradeus. How can I assist you with your data import today?
-                          </div>
-                      </div>
+                      ))}
+                      {isTyping && (
+                         <div className="flex gap-3">
+                              <div className="w-8 h-8 rounded-full bg-tradeum-100 dark:bg-tradeum-900/30 flex items-center justify-center text-tradeum-600 dark:text-tradeum-400 flex-shrink-0">
+                                  <Bot size={18} />
+                              </div>
+                              <div className="bg-white dark:bg-gray-800 p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 dark:border-gray-700 flex gap-1 items-center">
+                                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
+                              </div>
+                         </div>
+                      )}
+                      <div ref={messagesEndRef} />
                   </div>
 
                   <form onSubmit={handleSendMessage} className="p-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 items-center">
                           <input 
                             type="text" 
                             value={chatMessage}
                             onChange={(e) => setChatMessage(e.target.value)}
                             placeholder={t.chatPlaceholder}
-                            className="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-tradeum-500 dark:text-white"
+                            className="flex-1 px-4 py-3 bg-gray-100 dark:bg-gray-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-tradeum-500 dark:text-white border-2 border-transparent focus:border-tradeum-500 transition-all"
                           />
-                          <button type="submit" className="p-2 bg-tradeum-500 text-white rounded-full hover:bg-tradeum-600 transition-colors">
-                              <Send size={18} />
+                          <button 
+                            type="submit" 
+                            disabled={!chatMessage.trim() || isTyping}
+                            className="px-4 py-3 bg-tradeum-500 text-white rounded-xl hover:bg-tradeum-600 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center active:scale-95"
+                          >
+                              <Send size={20} />
                           </button>
                       </div>
                   </form>

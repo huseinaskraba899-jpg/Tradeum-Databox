@@ -159,7 +159,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex w-72 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 h-screen flex-col sticky top-0 transition-colors duration-300">
+      <div className="hidden lg:flex w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 h-screen flex-col sticky top-0 transition-colors duration-300">
         <SidebarContent />
       </div>
 

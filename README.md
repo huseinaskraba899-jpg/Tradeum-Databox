@@ -1,20 +1,46 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Tradeum Databox
 
-# Run and deploy your AI Studio app
+Professional Wholesale Data Import & AI Enrichment Platform for Shopify.
 
-This contains everything you need to run your app locally.
+Tradeum Databox helps e-commerce merchants automate the import, enrichment, and synchronization of wholesaler product data into Shopify stores.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1wIZUs8QDhU5ksP1zEb0ph3g4roSnbzk2
+## 🚀 Features
 
-## Run Locally
+*   **Dashboard**: Real-time overview of import volumes, error distribution, and sales metrics.
+*   **AI Enrichment**: Seamlessly integrated with Google Gemini API to generate SEO-optimized product titles, HTML descriptions, and taxonomy categorization.
+*   **Approval Workflow**: Review products before they go live. Filter by 'Draft' or 'Online' status.
+*   **Configuration Center**: Manage FTP credentials, Shopify API tokens, and Margin/Pricing rules.
+*   **Security & Trust**: Visual indicators for SSL, ISO 27001, and GDPR compliance to ensure enterprise-grade data handling.
 
-**Prerequisites:**  Node.js
+## 🛠 Usage Guide
 
+### 1. Login
+Access the platform using the demo credentials provided on the login screen:
+*   **User**: `admin@tradeum.com`
+*   **Password**: `admin123`
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+### 2. Dashboard & AI Support
+*   **Overview**: View your shop's health, including total products, pending items, and margin alerts.
+*   **Tradeus AI Chat**: Use the chat widget (bottom right or dashboard card) to ask questions about your data or get help with configurations.
+
+### 3. Product Approval & AI Generation
+Navigate to the "Products & Approval" (Produkte & Freigabe) section:
+1.  **Filter**: Use the tabs to see 'Draft' (Action Required) or 'Online' products.
+2.  **AI Optimization**: Click the **Generate with AI** (Magic Wand) button on any draft product.
+    *   *Note*: You must provide a valid Gemini API Key in the Configuration section for this to work.
+3.  **Edit/Approve**: Review the AI-generated content, make manual edits to prices if needed, and click **Approve** to sync to Shopify.
+
+### 4. Configuration
+Customize the app behavior in the "Configuration" (Einstellungen) section:
+*   **AI Settings**: Enter your Google Gemini API Key here.
+*   **Shopify Connection**: Input your store URL and Admin Access Token.
+*   **Margin Rules**: Set a minimum margin percentage (e.g., 25%). Products below this will be flagged.
+*   **Price Rounding**: Choose between exact prices, .99, or .95 endings.
+
+## 💻 Tech Stack
+
+*   **Frontend**: React 19, TypeScript
+*   **Styling**: Tailwind CSS (with Dark Mode support)
+*   **Charts**: Recharts
+*   **AI**: Google GenAI SDK (Gemini Models)
+*   **Icons**: Lucide React
