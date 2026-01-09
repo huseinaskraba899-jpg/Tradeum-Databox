@@ -60,10 +60,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onChangeView(item.id as ViewState);
                 setIsOpen(false);
               }}
-              className={`w-full flex items-center justify-between px-4 py-4 text-left rounded-xl transition-all duration-200 group ${
+              // Added 'border' to base classes and 'border-transparent' to inactive state to prevent layout shift
+              className={`w-full flex items-center justify-between px-4 py-4 text-left rounded-xl transition-all duration-200 group border ${
                 isActive 
-                  ? 'bg-tradeum-50 dark:bg-tradeum-900/20 text-tradeum-700 dark:text-tradeum-400 shadow-sm border border-tradeum-100 dark:border-tradeum-800/50' 
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white'
+                  ? 'bg-tradeum-50 dark:bg-tradeum-900/20 text-tradeum-700 dark:text-tradeum-400 shadow-sm border-tradeum-100 dark:border-tradeum-800/50' 
+                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
               <div className="flex items-center gap-3">

@@ -99,8 +99,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ products, lang, showNotifi
               </div>
           </div>
 
-          {/* Box 3: AI Support */}
-          <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-xl p-6 shadow-lg text-white flex flex-col justify-between relative overflow-hidden">
+          {/* Box 3: AI Support (BRAND COLOR) */}
+          <div className="bg-gradient-to-br from-tradeum-500 to-tradeum-700 rounded-xl p-6 shadow-lg text-white flex flex-col justify-between relative overflow-hidden">
               <div className="absolute top-0 right-0 p-4 opacity-10">
                   <Bot size={100} />
               </div>
@@ -110,12 +110,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ products, lang, showNotifi
                   </div>
                   <div>
                       <h3 className="font-bold text-white text-lg">{t.boxAi}</h3>
-                      <p className="text-sm text-indigo-100">Instant Help & Config Assistant</p>
+                      <p className="text-sm text-tradeum-100">Instant Help & Config Assistant</p>
                   </div>
               </div>
               <button 
                 onClick={() => setIsChatOpen(true)}
-                className="w-full py-3 bg-white text-indigo-700 font-bold rounded-lg hover:bg-indigo-50 transition-colors flex items-center justify-center gap-2 relative z-10"
+                className="w-full py-3 bg-white text-tradeum-700 font-bold rounded-lg hover:bg-tradeum-50 transition-colors flex items-center justify-center gap-2 relative z-10 shadow-sm"
               >
                   <MessageSquare size={18} /> {t.startChat}
               </button>
@@ -262,7 +262,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ products, lang, showNotifi
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
               <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsChatOpen(false)}></div>
               <div className="bg-white dark:bg-gray-900 w-full max-w-lg rounded-2xl shadow-2xl relative z-10 overflow-hidden flex flex-col h-[500px] border border-gray-200 dark:border-gray-700 animate-slide-in">
-                  <div className="bg-gradient-to-r from-indigo-600 to-purple-700 p-4 flex justify-between items-center">
+                  <div className="bg-gradient-to-r from-tradeum-500 to-tradeum-700 p-4 flex justify-between items-center">
                       <div className="flex items-center gap-3 text-white">
                           <Bot />
                           <span className="font-bold">{t.chatTitle}</span>
@@ -274,7 +274,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ products, lang, showNotifi
                   
                   <div className="flex-1 bg-gray-50 dark:bg-gray-950 p-4 overflow-y-auto space-y-4">
                       <div className="flex gap-3">
-                          <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 flex-shrink-0">
+                          <div className="w-8 h-8 rounded-full bg-tradeum-100 dark:bg-tradeum-900/30 flex items-center justify-center text-tradeum-600 dark:text-tradeum-400 flex-shrink-0">
                               <Bot size={18} />
                           </div>
                           <div className="bg-white dark:bg-gray-800 p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 dark:border-gray-700 text-sm dark:text-gray-200">
@@ -290,9 +290,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ products, lang, showNotifi
                             value={chatMessage}
                             onChange={(e) => setChatMessage(e.target.value)}
                             placeholder={t.chatPlaceholder}
-                            className="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
+                            className="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-tradeum-500 dark:text-white"
                           />
-                          <button type="submit" className="p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-colors">
+                          <button type="submit" className="p-2 bg-tradeum-500 text-white rounded-full hover:bg-tradeum-600 transition-colors">
                               <Send size={18} />
                           </button>
                       </div>

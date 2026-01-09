@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TrendingUp, Lock, Mail, ArrowRight, Info } from 'lucide-react';
+import { TrendingUp, Lock, Mail, ArrowRight, Info, ShieldCheck, Database } from 'lucide-react';
 import { Language, DICTIONARY } from '../types';
 
 interface LoginProps {
@@ -25,7 +25,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, lang, onLangChange }) => 
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col items-center justify-center p-4 relative">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col items-center justify-center p-4 relative transition-colors duration-300">
       
       {/* Language Switcher Top Right */}
       <div className="absolute top-6 right-6 flex gap-1 bg-white dark:bg-gray-900 p-1.5 rounded-lg border border-gray-200 dark:border-gray-800 shadow-sm">
@@ -119,8 +119,22 @@ export const Login: React.FC<LoginProps> = ({ onLogin, lang, onLangChange }) => 
             </div>
         </div>
 
-        <div className="text-center text-xs text-gray-400 dark:text-gray-500">
-           Protected by Enterprise Grade Security
+        {/* Security Info Area */}
+        <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
+           <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 text-center flex items-center justify-center gap-1">
+                <ShieldCheck size={12} /> {t.securityTitle}
+           </h3>
+           <div className="flex justify-center gap-4 flex-wrap">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-100 dark:border-green-900/30">
+                    <Lock size={12} /> <span className="text-[10px] font-bold">SSL 256-bit</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-blue-900/30">
+                    <ShieldCheck size={12} /> <span className="text-[10px] font-bold">ISO 27001</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 border border-purple-100 dark:border-purple-900/30">
+                    <Database size={12} /> <span className="text-[10px] font-bold">DSGVO</span>
+                </div>
+           </div>
         </div>
       </div>
     </div>
