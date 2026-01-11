@@ -7,6 +7,7 @@ import { Login } from './components/Login';
 import { NotificationOverlay, NotificationType } from './components/NotificationOverlay';
 import { ViewState, Product, AppConfig, Language, Theme, DICTIONARY, User } from './types';
 import { RefreshCw, Clock } from 'lucide-react';
+import { dataProvider } from './services/dataProvider';
 
 // Mock Initial Data
 const BASE_PRODUCTS: Product[] = [
@@ -115,8 +116,7 @@ const DEFAULT_ADMIN: User = {
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [users, setUsers] = useState<User[]>([]);
-
+  
   const [currentView, setCurrentView] = useState<ViewState>('dashboard');
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
   const [config, setConfig] = useState<AppConfig>(DEFAULT_CONFIG);
@@ -131,19 +131,10 @@ export default function App() {
   });
   const [lang, setLang] = useState<Language>('de');
 
-  // Initialization: Load users from localStorage or set default
+  // Initialization: Ensure LocalStorage has the admin user for the prototype
   useEffect(() => {
       const storedUsers = localStorage.getItem('tradeum_users');
-      if (storedUsers) {
-          try {
-              setUsers(JSON.parse(storedUsers));
-          } catch (e) {
-              console.error("Failed to parse users", e);
-              setUsers([DEFAULT_ADMIN]);
-          }
-      } else {
-          // Initialize with default admin
-          setUsers([DEFAULT_ADMIN]);
+      if (!storedUsers) {
           localStorage.setItem('tradeum_users', JSON.stringify([DEFAULT_ADMIN]));
       }
   }, []);
@@ -188,49 +179,50 @@ export default function App() {
     showNotification('info', "Product removed from queue");
   };
 
-  // --- Auth Handlers ---
+  // --- Auth Handlers (Now Async via DataProvider) ---
 
-  const handleLogin = (email: string, pass: string) => {
-      const user = users.find(u => u.email === email && u.password === pass);
-      if (user) {
+  const handleLogin = async (email: string, pass: string) => {
+      try {
+          const user = await dataProvider.login(email, pass);
           setCurrentUser(user);
-          setConfig(user.config); // Load user's config
-      } else {
-          throw new Error('Invalid credentials');
+          setConfig(user.config);
+      } catch (e) {
+          console.error(e);
+          throw e; // Rethrow for UI to handle
       }
   };
 
-  const handleRegister = (email: string, pass: string): boolean => {
-      if (users.find(u => u.email === email)) {
+  const handleRegister = async (email: string, pass: string): Promise<boolean> => {
+      try {
+          const newLicenseId = `TRD-NEW-${Date.now().toString().slice(-4)}`;
+          const initialConfig = { ...DEFAULT_CONFIG, licenseId: newLicenseId };
+          
+          await dataProvider.register(email, pass, initialConfig);
+          return true;
+      } catch (e) {
+          console.error(e);
           return false;
       }
-      const newUser: User = {
-          email,
-          password: pass,
-          config: { ...DEFAULT_CONFIG, licenseId: `TRD-NEW-${Date.now().toString().slice(-4)}` } // Generate simple dynamic license for demo
-      };
-      
-      const updatedUsers = [...users, newUser];
-      setUsers(updatedUsers);
-      localStorage.setItem('tradeum_users', JSON.stringify(updatedUsers));
-      return true;
   };
 
-  const handleSaveConfig = (newConfig: AppConfig) => {
+  const handleSaveConfig = async (newConfig: AppConfig) => {
       if (!currentUser) return;
 
-      const updatedUser = { ...currentUser, config: newConfig };
-      const updatedUsers = users.map(u => u.email === currentUser.email ? updatedUser : u);
-      
-      setUsers(updatedUsers);
-      setCurrentUser(updatedUser);
-      setConfig(newConfig);
-      
-      localStorage.setItem('tradeum_users', JSON.stringify(updatedUsers));
-      showNotification('success', "Configuration saved successfully.");
+      try {
+          await dataProvider.saveConfig(currentUser.email, newConfig);
+          
+          const updatedUser = { ...currentUser, config: newConfig };
+          setCurrentUser(updatedUser);
+          setConfig(newConfig);
+          
+          showNotification('success', "Configuration saved successfully.");
+      } catch (e) {
+          showNotification('error', "Failed to save configuration.");
+      }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+      await dataProvider.logout();
       setCurrentUser(null);
       setConfig(DEFAULT_CONFIG);
       setCurrentView('dashboard');
