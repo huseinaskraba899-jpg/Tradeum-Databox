@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AppConfig, Language, DICTIONARY } from '../types';
-import { Save, Server, ShieldCheck, Clock, Calculator, Sliders, ShoppingBag, Database, ArrowRight, Bot } from 'lucide-react';
+import { Save, Server, ShieldCheck, Clock, Calculator, Sliders, ShoppingBag, Database, ArrowRight, Bot, BadgeCheck } from 'lucide-react';
 
 interface ConfigurationProps {
   config: AppConfig;
@@ -30,6 +30,29 @@ export const Configuration: React.FC<ConfigurationProps> = ({ config, onSave, la
 
       <form onSubmit={handleSubmit} className="space-y-6">
         
+        {/* License Section */}
+        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 flex items-center gap-2">
+            <BadgeCheck className="text-blue-600 dark:text-blue-400" size={20} />
+            <h2 className="font-semibold text-gray-900 dark:text-white">{t.licenseSection}</h2>
+          </div>
+          <div className="p-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t.licenseId}</label>
+              <input 
+                type="text" 
+                value={localConfig.licenseId}
+                onChange={(e) => setLocalConfig({...localConfig, licenseId: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all font-mono"
+                placeholder="TRD-XXXX-XXXX"
+              />
+              <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                {t.licenseDesc}
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Connection Section */}
         <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 flex items-center gap-2">

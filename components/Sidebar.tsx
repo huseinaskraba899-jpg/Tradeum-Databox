@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { ViewState, Language, Theme, DICTIONARY } from '../types';
-import { LayoutDashboard, CheckSquare, Settings, FileText, Moon, Sun, Menu, X, LogOut, TrendingUp, ShieldCheck, Lock, Database } from 'lucide-react';
+import { ViewState, Language, Theme, DICTIONARY, User } from '../types';
+import { LayoutDashboard, CheckSquare, Settings, FileText, Moon, Sun, Menu, X, LogOut, TrendingUp, ShieldCheck, Lock, Database, BadgeCheck } from 'lucide-react';
 
 interface SidebarProps {
   currentView: ViewState;
@@ -11,10 +11,12 @@ interface SidebarProps {
   currentTheme: Theme;
   onThemeChange: (theme: Theme) => void;
   onLogout: () => void;
+  licenseId: string;
+  user: User | null;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ 
-  currentView, onChangeView, pendingCount, currentLang, onLangChange, currentTheme, onThemeChange, onLogout
+  currentView, onChangeView, pendingCount, currentLang, onLangChange, currentTheme, onThemeChange, onLogout, licenseId, user
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const t = DICTIONARY[currentLang];
@@ -27,6 +29,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   const toggleSidebar = () => setIsOpen(!isOpen);
+
+  // Calculate validity date (1 year from now for demo purposes)
+  const validUntil = new Date();
+  validUntil.setFullYear(validUntil.getFullYear() + 1);
+  const validDateString = validUntil.toLocaleDateString(currentLang === 'en' ? 'en-US' : 'de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
   const Logo = () => (
       <div className="flex items-center gap-2">
@@ -80,9 +87,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
           );
         })}
 
+        {/* License Info Section */}
+        <div className="mt-6 px-4 py-2">
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1">
+                <BadgeCheck size={12} /> {t.licenseId}
+            </h3>
+            <div className="p-3 bg-tradeum-50 dark:bg-tradeum-900/10 rounded-lg border border-tradeum-100 dark:border-tradeum-800/30">
+                <div className="flex justify-between items-center mb-1">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">ID:</span>
+                    <span className="font-mono font-bold text-tradeum-700 dark:text-tradeum-400 text-xs">{licenseId}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">{t.licenseValidUntil}:</span>
+                    <span className="font-medium text-gray-700 dark:text-gray-300 text-xs">{validDateString}</span>
+                </div>
+            </div>
+        </div>
+
         {/* Security & Trust Section */}
-        <div className="mt-8 px-4 py-2">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-1">
+        <div className="mt-4 px-4 py-2">
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1">
                 <ShieldCheck size={12} /> {t.securityTitle}
             </h3>
             <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 border border-gray-100 dark:border-gray-800 space-y-2">
@@ -127,51 +151,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         <div className="flex items-center justify-between px-2 pt-2">
-            <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-tradeum-100 dark:bg-tradeum-900/30 flex items-center justify-center text-tradeum-600 dark:text-tradeum-400 font-bold text-xs">
-                AD
+            <div className="flex items-center gap-3 w-full overflow-hidden">
+            <div className="w-8 h-8 rounded-full bg-tradeum-100 dark:bg-tradeum-900/30 flex items-center justify-center text-tradeum-600 dark:text-tradeum-400 font-bold text-xs flex-shrink-0">
+                {user?.email?.charAt(0).toUpperCase() || 'U'}
             </div>
-            <div className="flex flex-col">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Admin</span>
+            <div className="flex flex-col min-w-0">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-200 truncate">{user?.email || 'User'}</span>
                 <span className="text-xs text-gray-500 dark:text-gray-400">Online</span>
             </div>
             </div>
             <button 
                 onClick={onLogout}
-                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors flex-shrink-0 ml-2"
                 title={t.logout}
             >
                 <LogOut size={18} />
             </button>
         </div>
       </div>
-    </>
-  );
-
-  return (
-    <>
-      {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 z-50">
-         <Logo />
-         <button onClick={toggleSidebar} className="p-2 text-gray-600 dark:text-gray-300">
-             {isOpen ? <X /> : <Menu />}
-         </button>
-      </div>
-
-      {/* Desktop Sidebar */}
-      <div className="hidden lg:flex w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 h-screen flex-col sticky top-0 transition-colors duration-300">
-        <SidebarContent />
-      </div>
-
-      {/* Mobile Slide-over */}
-      {isOpen && (
-          <div className="lg:hidden fixed inset-0 z-40">
-              <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={toggleSidebar}></div>
-              <div className="absolute left-0 top-0 bottom-0 w-64 bg-white dark:bg-gray-900 flex flex-col shadow-2xl animate-slide-in">
-                 <SidebarContent />
-              </div>
-          </div>
-      )}
     </>
   );
 };

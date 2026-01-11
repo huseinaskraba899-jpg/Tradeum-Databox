@@ -1,14 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Product, Language, DICTIONARY } from '../types';
+import { Product, Language, DICTIONARY, User } from '../types';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
-import { ArrowUpRight, ArrowDownRight, Activity, AlertTriangle, CheckCircle, Clock, ShoppingBag, Phone, Mail, MapPin, Bot, MessageSquare, Send, User, X } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, Activity, AlertTriangle, CheckCircle, Clock, ShoppingBag, Phone, Mail, MapPin, Bot, MessageSquare, Send, User as UserIcon, X } from 'lucide-react';
 
 interface DashboardProps {
   products: Product[];
   lang: Language;
   showNotification: (type: 'success' | 'error' | 'info', message: string) => void;
+  user: User | null;
 }
 
 interface ChatMessage {
@@ -17,7 +18,7 @@ interface ChatMessage {
     text: string;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ products, lang, showNotification }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ products, lang, showNotification, user }) => {
   const t = DICTIONARY[lang];
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
@@ -97,9 +98,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ products, lang, showNotifi
                   </div>
                   <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                       <span className="text-sm text-gray-500 dark:text-gray-400">{t.loggedIn}</span>
-                      <div className="flex items-center gap-2">
-                          <User size={14} className="text-gray-400" />
-                          <span className="font-medium text-gray-900 dark:text-white">Admin User</span>
+                      <div className="flex items-center gap-2 overflow-hidden">
+                          <UserIcon size={14} className="text-gray-400 flex-shrink-0" />
+                          <span className="font-medium text-gray-900 dark:text-white truncate max-w-[150px]" title={user?.email}>{user?.email || 'User'}</span>
                       </div>
                   </div>
               </div>

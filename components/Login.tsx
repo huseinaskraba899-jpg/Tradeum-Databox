@@ -1,26 +1,67 @@
 import React, { useState } from 'react';
-import { TrendingUp, Lock, Mail, ArrowRight, Info, ShieldCheck, Database } from 'lucide-react';
+import { TrendingUp, Lock, Mail, ArrowRight, Info, ShieldCheck, Database, UserPlus, LogIn } from 'lucide-react';
 import { Language, DICTIONARY } from '../types';
 
 interface LoginProps {
-  onLogin: () => void;
+  onLogin: (email: string, password: string) => void;
+  onRegister: (email: string, password: string) => boolean;
   lang: Language;
   onLangChange: (lang: Language) => void;
 }
 
-export const Login: React.FC<LoginProps> = ({ onLogin, lang, onLangChange }) => {
-  const [email, setEmail] = useState('admin@tradeum.com');
-  const [password, setPassword] = useState('admin123');
+export const Login: React.FC<LoginProps> = ({ onLogin, onRegister, lang, onLangChange }) => {
+  const [isLoginMode, setIsLoginMode] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
+  
   const t = DICTIONARY[lang];
+
+  // Set default credentials only in login mode for demo
+  React.useEffect(() => {
+    if (isLoginMode && email === '') {
+        setEmail('admin@tradeum.com');
+        setPassword('admin123');
+    } else if (!isLoginMode) {
+        setEmail('');
+        setPassword('');
+    }
+    setErrorMsg('');
+    setSuccessMsg('');
+  }, [isLoginMode]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMsg('');
+    setSuccessMsg('');
+
     // Simulate network delay
     setTimeout(() => {
       setIsLoading(false);
-      onLogin();
+      
+      if (isLoginMode) {
+          try {
+              onLogin(email, password);
+          } catch (e) {
+              setErrorMsg(t.authFailed);
+          }
+      } else {
+          const success = onRegister(email, password);
+          if (success) {
+              setSuccessMsg(t.regSuccess);
+              setTimeout(() => {
+                  setIsLoginMode(true);
+                  setSuccessMsg('');
+                  setEmail(email); // Keep email for login
+                  setPassword(password); // Keep password for login convenience
+              }, 1500);
+          } else {
+              setErrorMsg(t.userExists);
+          }
+      }
     }, 800);
   };
 
@@ -68,7 +109,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, lang, onLangChange }) => 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-tradeum-500 transition-all"
-                placeholder="admin@tradeum.com"
+                placeholder={isLoginMode ? "admin@tradeum.com" : "name@company.com"}
               />
             </div>
           </div>
@@ -90,6 +131,17 @@ export const Login: React.FC<LoginProps> = ({ onLogin, lang, onLangChange }) => 
             </div>
           </div>
 
+          {errorMsg && (
+              <div className="text-red-500 text-sm text-center bg-red-50 dark:bg-red-900/20 p-2 rounded-lg border border-red-100 dark:border-red-900/30">
+                  {errorMsg}
+              </div>
+          )}
+          {successMsg && (
+              <div className="text-green-500 text-sm text-center bg-green-50 dark:bg-green-900/20 p-2 rounded-lg border border-green-100 dark:border-green-900/30">
+                  {successMsg}
+              </div>
+          )}
+
           <button
             type="submit"
             disabled={isLoading}
@@ -99,25 +151,37 @@ export const Login: React.FC<LoginProps> = ({ onLogin, lang, onLangChange }) => 
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
             ) : (
               <>
-                {t.signIn} <ArrowRight size={18} />
+                {isLoginMode ? <LogIn size={18} /> : <UserPlus size={18} />}
+                {isLoginMode ? t.signIn : t.createAccount}
               </>
             )}
           </button>
         </form>
 
-        {/* Demo Credentials Info Box */}
-        <div className="p-4 bg-tradeum-50 dark:bg-tradeum-900/10 rounded-lg border border-tradeum-100 dark:border-tradeum-800/30">
-            <div className="flex items-center gap-2 text-tradeum-700 dark:text-tradeum-400 mb-2">
-                <Info size={16} />
-                <span className="text-xs font-bold uppercase tracking-wider">Demo Credentials</span>
-            </div>
-            <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm text-gray-600 dark:text-gray-400">
-                <span className="font-medium">User:</span>
-                <span className="font-mono text-gray-800 dark:text-gray-200">admin@tradeum.com</span>
-                <span className="font-medium">Pass:</span>
-                <span className="font-mono text-gray-800 dark:text-gray-200">admin123</span>
-            </div>
+        <div className="text-center">
+            <button 
+                onClick={() => setIsLoginMode(!isLoginMode)}
+                className="text-sm text-tradeum-600 dark:text-tradeum-400 hover:underline font-medium"
+            >
+                {isLoginMode ? t.noAccount : t.haveAccount}
+            </button>
         </div>
+
+        {/* Demo Credentials Info Box - Only show in login mode */}
+        {isLoginMode && (
+            <div className="p-4 bg-tradeum-50 dark:bg-tradeum-900/10 rounded-lg border border-tradeum-100 dark:border-tradeum-800/30">
+                <div className="flex items-center gap-2 text-tradeum-700 dark:text-tradeum-400 mb-2">
+                    <Info size={16} />
+                    <span className="text-xs font-bold uppercase tracking-wider">Demo Credentials</span>
+                </div>
+                <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm text-gray-600 dark:text-gray-400">
+                    <span className="font-medium">User:</span>
+                    <span className="font-mono text-gray-800 dark:text-gray-200">admin@tradeum.com</span>
+                    <span className="font-medium">Pass:</span>
+                    <span className="font-mono text-gray-800 dark:text-gray-200">admin123</span>
+                </div>
+            </div>
+        )}
 
         {/* Security Info Area */}
         <div className="pt-4 border-t border-gray-100 dark:border-gray-800">

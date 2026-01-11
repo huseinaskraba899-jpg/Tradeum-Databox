@@ -34,6 +34,9 @@ export interface CsvMapping {
 }
 
 export interface AppConfig {
+  // License
+  licenseId: string;
+
   // FTP
   ftpHost: string;
   ftpUser: string;
@@ -52,6 +55,12 @@ export interface AppConfig {
   
   // Mapping
   csvMapping: CsvMapping;
+}
+
+export interface User {
+  email: string;
+  password: string; // Note: In production, never store raw passwords. This is for prototype localStorage only.
+  config: AppConfig;
 }
 
 export type ViewState = 'dashboard' | 'approval' | 'configuration' | 'logs';
@@ -87,6 +96,10 @@ export const DICTIONARY = {
     email: 'Email Address',
     password: 'Password',
     signIn: 'Sign In',
+    register: 'Create Account',
+    createAccount: 'Sign Up',
+    haveAccount: 'Already have an account? Sign In',
+    noAccount: 'No account yet? Create one',
     apiKeyPlaceholder: 'Enter your Gemini API Key',
     nextUpdate: 'Next Update',
     searchPlaceholder: 'Search by SKU or Name...',
@@ -151,7 +164,14 @@ export const DICTIONARY = {
     chatPlaceholder: 'How can I help you today?',
     address: 'Address',
     phone: 'Phone',
-    emailContact: 'Email'
+    emailContact: 'Email',
+    licenseSection: 'License & Account',
+    licenseId: 'License ID',
+    licenseDesc: 'Your unique Tradeum enterprise license key.',
+    licenseValidUntil: 'Valid until',
+    authFailed: 'Invalid email or password',
+    userExists: 'User already exists',
+    regSuccess: 'Registration successful! Please login.'
   },
   de: {
     dashboard: 'Übersicht',
@@ -183,6 +203,10 @@ export const DICTIONARY = {
     email: 'E-Mail Adresse',
     password: 'Passwort',
     signIn: 'Einloggen',
+    register: 'Konto erstellen',
+    createAccount: 'Registrieren',
+    haveAccount: 'Bereits ein Konto? Anmelden',
+    noAccount: 'Noch kein Konto? Registrieren',
     apiKeyPlaceholder: 'Gemini API Key eingeben',
     nextUpdate: 'Nächstes Update',
     searchPlaceholder: 'Suche nach SKU oder Name...',
@@ -247,7 +271,14 @@ export const DICTIONARY = {
     chatPlaceholder: 'Wie kann ich Ihnen helfen?',
     address: 'Adresse',
     phone: 'Telefon',
-    emailContact: 'E-Mail'
+    emailContact: 'E-Mail',
+    licenseSection: 'Lizenz & Konto',
+    licenseId: 'Lizenz ID',
+    licenseDesc: 'Ihr eindeutiger Tradeum Enterprise Lizenzschlüssel.',
+    licenseValidUntil: 'Gültig bis',
+    authFailed: 'Ungültige E-Mail oder Passwort',
+    userExists: 'Benutzer existiert bereits',
+    regSuccess: 'Registrierung erfolgreich! Bitte anmelden.'
   },
   ch: {
     dashboard: 'Übersicht',
@@ -279,6 +310,10 @@ export const DICTIONARY = {
     email: 'E-Mail Adrässe',
     password: 'Passwort',
     signIn: 'Iilogge',
+    register: 'Konto erstelle',
+    createAccount: 'Registriere',
+    haveAccount: 'Scho es Konto? Iilogge',
+    noAccount: 'Nonig es Konto? Registriere',
     apiKeyPlaceholder: 'Gemini API Key iigäh',
     nextUpdate: 'Nächsts Update',
     searchPlaceholder: 'Suueche nach SKU oder Name...',
@@ -334,7 +369,7 @@ export const DICTIONARY = {
     secIso: 'ISO 27001 Zertifiziert',
     secGdpr: 'DSGVO Konform',
     boxShop: 'Shop Infos',
-    boxSupport: 'Kundedienscht',
+    boxSupport: 'Kundenservice',
     boxAi: 'KI Support',
     revenue: 'Gsamtuusatz',
     loggedIn: 'Aagmäldet als',
@@ -343,6 +378,13 @@ export const DICTIONARY = {
     chatPlaceholder: 'Wie chani dir hälfe?',
     address: 'Adrässe',
     phone: 'Telefon',
-    emailContact: 'E-Mail'
+    emailContact: 'E-Mail',
+    licenseSection: 'Lizenz & Konto',
+    licenseId: 'Lizenz ID',
+    licenseDesc: 'Diin eindeutige Tradeum Enterprise Lizenzschlüssel.',
+    licenseValidUntil: 'Gültig bis',
+    authFailed: 'Ungültigi E-Mail oder Passwort',
+    userExists: 'Benutzer existiert scho',
+    regSuccess: 'Registrierig erfolgriich! Bitte iilogge.'
   }
 };

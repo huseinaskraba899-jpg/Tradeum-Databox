@@ -5,7 +5,7 @@ import { ApprovalQueue } from './components/ApprovalQueue';
 import { Configuration } from './components/Configuration';
 import { Login } from './components/Login';
 import { NotificationOverlay, NotificationType } from './components/NotificationOverlay';
-import { ViewState, Product, AppConfig, Language, Theme, DICTIONARY } from './types';
+import { ViewState, Product, AppConfig, Language, Theme, DICTIONARY, User } from './types';
 import { RefreshCw, Clock } from 'lucide-react';
 
 // Mock Initial Data
@@ -88,7 +88,8 @@ const generateMockProducts = (): Product[] => {
 
 const INITIAL_PRODUCTS = [...BASE_PRODUCTS, ...generateMockProducts()];
 
-const INITIAL_CONFIG: AppConfig = {
+const DEFAULT_CONFIG: AppConfig = {
+  licenseId: 'TRD-DEMO-2024-X99',
   ftpHost: 'ftp.suppliers.com',
   ftpUser: 'wholesale_connect',
   syncInterval: 'daily',
@@ -106,11 +107,19 @@ const INITIAL_CONFIG: AppConfig = {
   }
 };
 
+const DEFAULT_ADMIN: User = {
+    email: 'admin@tradeum.com',
+    password: 'admin123',
+    config: DEFAULT_CONFIG
+};
+
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
+
   const [currentView, setCurrentView] = useState<ViewState>('dashboard');
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
-  const [config, setConfig] = useState<AppConfig>(INITIAL_CONFIG);
+  const [config, setConfig] = useState<AppConfig>(DEFAULT_CONFIG);
   const [notification, setNotification] = useState<NotificationType | null>(null);
   
   // System Theme Detection
@@ -121,6 +130,23 @@ export default function App() {
     return 'light';
   });
   const [lang, setLang] = useState<Language>('de');
+
+  // Initialization: Load users from localStorage or set default
+  useEffect(() => {
+      const storedUsers = localStorage.getItem('tradeum_users');
+      if (storedUsers) {
+          try {
+              setUsers(JSON.parse(storedUsers));
+          } catch (e) {
+              console.error("Failed to parse users", e);
+              setUsers([DEFAULT_ADMIN]);
+          }
+      } else {
+          // Initialize with default admin
+          setUsers([DEFAULT_ADMIN]);
+          localStorage.setItem('tradeum_users', JSON.stringify([DEFAULT_ADMIN]));
+      }
+  }, []);
 
   // Listen for system theme changes
   useEffect(() => {
@@ -162,14 +188,63 @@ export default function App() {
     showNotification('info', "Product removed from queue");
   };
 
+  // --- Auth Handlers ---
+
+  const handleLogin = (email: string, pass: string) => {
+      const user = users.find(u => u.email === email && u.password === pass);
+      if (user) {
+          setCurrentUser(user);
+          setConfig(user.config); // Load user's config
+      } else {
+          throw new Error('Invalid credentials');
+      }
+  };
+
+  const handleRegister = (email: string, pass: string): boolean => {
+      if (users.find(u => u.email === email)) {
+          return false;
+      }
+      const newUser: User = {
+          email,
+          password: pass,
+          config: { ...DEFAULT_CONFIG, licenseId: `TRD-NEW-${Date.now().toString().slice(-4)}` } // Generate simple dynamic license for demo
+      };
+      
+      const updatedUsers = [...users, newUser];
+      setUsers(updatedUsers);
+      localStorage.setItem('tradeum_users', JSON.stringify(updatedUsers));
+      return true;
+  };
+
+  const handleSaveConfig = (newConfig: AppConfig) => {
+      if (!currentUser) return;
+
+      const updatedUser = { ...currentUser, config: newConfig };
+      const updatedUsers = users.map(u => u.email === currentUser.email ? updatedUser : u);
+      
+      setUsers(updatedUsers);
+      setCurrentUser(updatedUser);
+      setConfig(newConfig);
+      
+      localStorage.setItem('tradeum_users', JSON.stringify(updatedUsers));
+      showNotification('success', "Configuration saved successfully.");
+  };
+
+  const handleLogout = () => {
+      setCurrentUser(null);
+      setConfig(DEFAULT_CONFIG);
+      setCurrentView('dashboard');
+  };
+
   const pendingCount = products.filter(p => !p.isOnline).length;
   const t = DICTIONARY[lang];
 
-  if (!isAuthenticated) {
+  if (!currentUser) {
     return (
       <div className={`${theme}`}>
          <Login 
-            onLogin={() => setIsAuthenticated(true)} 
+            onLogin={handleLogin}
+            onRegister={handleRegister}
             lang={lang} 
             onLangChange={setLang}
          />
@@ -194,7 +269,9 @@ export default function App() {
             onLangChange={setLang}
             currentTheme={theme}
             onThemeChange={setTheme}
-            onLogout={() => setIsAuthenticated(false)}
+            onLogout={handleLogout}
+            licenseId={config.licenseId}
+            user={currentUser}
         />
         
         <main className="flex-1 p-4 lg:p-8 overflow-y-auto max-h-screen w-full flex flex-col">
@@ -205,6 +282,7 @@ export default function App() {
                     products={products} 
                     lang={lang} 
                     showNotification={showNotification}
+                    user={currentUser}
                 />
             )}
             
@@ -222,10 +300,7 @@ export default function App() {
             {currentView === 'configuration' && (
                 <Configuration 
                     config={config}
-                    onSave={(newConfig) => {
-                        setConfig(newConfig);
-                        showNotification('success', "Configuration saved successfully.");
-                    }}
+                    onSave={handleSaveConfig}
                     lang={lang}
                 />
             )}
