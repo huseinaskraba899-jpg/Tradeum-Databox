@@ -43,6 +43,18 @@ export const Dashboard: React.FC<DashboardProps> = ({ products, lang, showNotifi
   const totalProducts = products.length;
   const pending = products.filter(p => p.status === 'draft').length;
   const lowMargin = products.filter(p => !p.marginSafe).length;
+  
+  // Calculate Net Stock Value for Online Items
+  // Formula: Sum of (BuyPrice * Stock) for all items where isOnline is true
+  const netStockValue = products
+    .filter(p => p.isOnline)
+    .reduce((sum, p) => sum + (p.buyPrice * p.stock), 0);
+
+  const formattedNetStockValue = new Intl.NumberFormat(lang === 'en' ? 'en-US' : 'de-DE', {
+      style: 'currency',
+      currency: 'EUR',
+      maximumFractionDigits: 0
+  }).format(netStockValue);
 
   const chartData = [
     { name: 'Mon', imported: 400, errors: 24 },
@@ -94,7 +106,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ products, lang, showNotifi
               <div className="space-y-3">
                   <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                       <span className="text-sm text-gray-500 dark:text-gray-400">{t.revenue}</span>
-                      <span className="font-mono font-bold text-gray-900 dark:text-white">€1,245,300</span>
+                      <span className="font-mono font-bold text-gray-900 dark:text-white">{formattedNetStockValue}</span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                       <span className="text-sm text-gray-500 dark:text-gray-400">{t.loggedIn}</span>

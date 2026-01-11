@@ -50,8 +50,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   );
 
   const SidebarContent = () => (
-    <>
-      <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3 bg-white dark:bg-gray-900">
+    <div className="flex flex-col h-full bg-white dark:bg-gray-900">
+      <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3 bg-white dark:bg-gray-900 flex-shrink-0">
         <Logo />
       </div>
 
@@ -126,7 +126,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </nav>
 
-      <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-4 bg-white dark:bg-gray-900">
+      <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-4 bg-white dark:bg-gray-900 flex-shrink-0">
         {/* Controls */}
         <div className="flex justify-between items-center bg-gray-50 dark:bg-gray-800 p-2 rounded-lg border border-gray-100 dark:border-gray-700">
             <button 
@@ -169,6 +169,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
         </div>
       </div>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Mobile Header */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 z-50">
+         <Logo />
+         <button onClick={toggleSidebar} className="p-2 text-gray-600 dark:text-gray-300">
+             {isOpen ? <X /> : <Menu />}
+         </button>
+      </div>
+
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:flex w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 h-screen flex-col sticky top-0 transition-colors duration-300">
+        <SidebarContent />
+      </div>
+
+      {/* Mobile Slide-over */}
+      {isOpen && (
+          <div className="lg:hidden fixed inset-0 z-40">
+              <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={toggleSidebar}></div>
+              <div className="absolute left-0 top-0 bottom-0 w-64 bg-white dark:bg-gray-900 flex flex-col shadow-2xl animate-slide-in h-full">
+                 <SidebarContent />
+              </div>
+          </div>
+      )}
     </>
   );
 };
